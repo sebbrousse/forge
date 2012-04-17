@@ -6,6 +6,10 @@ import org.parboiled.common.StringUtils;
 import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,6 +19,9 @@ import org.parboiled.support.ParsingResult;
  */
 public class RepositoriesParserTest {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(RepositoriesParserTest.class);
+
+
     @Test
     public void test() {
         RepositoriesParser parser = Parboiled.createParser(RepositoriesParser.class);
@@ -23,11 +30,15 @@ public class RepositoriesParserTest {
         String input = "custom:http://nexus.com/repo/public";
         ParsingResult<?> result = new RecoveringParseRunner(parser.Repository()).run(input);
 
-        System.out.println(input + " = " + result.parseTreeRoot.getValue() + '\n');
-        System.out.println(ParseTreeUtils.printNodeTree(result) + '\n');
+        LOGGER.info("{} = {}", input, result.parseTreeRoot.getValue());
+        LOGGER.info("{}", ParseTreeUtils.printNodeTree(result));
 
         if (!result.matched) {
-            System.out.println(StringUtils.join(result.parseErrors, "---\n"));
+            LOGGER.error("{}", StringUtils.join(result.parseErrors, "---\n"));
         }
+
+        assertTrue(result.matched);
+
+
     }
 }
