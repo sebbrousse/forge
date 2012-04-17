@@ -3,55 +3,104 @@ package org.forge.parsers;
 import org.forge.exceptions.MandatoryParameterException;
 import org.forge.modele.Project;
 import org.forge.modele.ProjectDefinition;
+import org.parboiled.BaseParser;
+import org.parboiled.Rule;
+import org.parboiled.annotations.BuildParseTree;
 
 import java.util.StringTokenizer;
 
-public class ProjectParser implements Parser<Project> {
+@BuildParseTree
+public class ProjectParser extends BaseParser<Object> {
 
-    private String flux;
-
-    public ProjectParser(String flux) {
-        this.flux = flux;
+    Rule Project() {
+        return Sequence(
+                ProjectDefinition(),
+                ZeroOrMore(
+                        FirstOf(
+                                Dependencies(),
+                                Repositories()
+                        )
+                )
+        );
     }
 
-    @Override
-    public Project parse() {
-//        if (flux == null || flux.isEmpty()) {
-//            throw new MandatoryParameterException();
-//        }
-//
-//
-//        ProjectParser projectParser = new ProjectParser(flux);
-//        ProjectBlock project;
-//        try {
-//            project = projectParser.parse();
-//        } catch(MandatoryParameterException e) {
-//            throw new NoDefinitionException();
-//        }
-//
-//
-//        return project;
+    Rule ProjectDefinition() {
+        return null;
+    }
 
+    Rule Repositories() {
+        return Sequence(
+                "repositories",'{',
+                OneOrMore(Repository()),
+                '}'
+        );
+    }
 
-        StringTokenizer tokenizer = new StringTokenizer(flux, "\n");
+    Rule Dependencies() {
+        return Sequence(
+                "dependencies",'{',
+                OneOrMore(
+                        FirstOf(Dependency(),
+                                GroupDependencies()
+                        )
+                ),
+                '}'
+        );
+    }
 
-        if (tokenizer.countTokens() != 3) {
-            throw new MandatoryParameterException();
-        }
+    Rule Dependency() {
+        return Sequence(
+                GroupId(),
+                ':',
+                ArtifactId(),
+                ':',
+                Version(),
+                ZeroOrMore(',')
+        );
+    }
 
-        Project project = new Project();
+    Rule GroupDependencies() {
+        return Sequence(
+                GroupId(),
+                ':',
+                ':',
+                Version(),
+                '{',
+                OneOrMore(ArtifactDependency()),
+                '}'
+        );
+    }
 
-        ProjectDefinitionParser projectDefinitionParser = new ProjectDefinitionParser(tokenizer.nextToken());
-        ProjectDefinition projectDefinition = projectDefinitionParser.parse();
+    Rule ArtifactDependency() {
+        return Sequence(
+                ArtifactId(),
+                ','
+        );
+    }
 
+    Rule GroupId() {
+        return OneOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), '.', '-'));
+    }
 
-        project.setProjectDefinition(projectDefinition);
-        project.setDescription(tokenizer.nextToken());
+    Rule ArtifactId() {
+        return OneOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), '.', '-'));
+    }
 
-        if (!project.isValid()) {
-            throw new MandatoryParameterException();
-        }
+    Rule Version() {
+        return OneOrMore(FirstOf(CharRange('0', '9'), CharRange('a', 'z'), CharRange('A', 'Z'), '.'));
+    }
 
-        return project;
+    Rule Repository() {
+        return Sequence(
+                Id(),':',Url()
+        );
+    }
+
+    Rule Id() {
+        return OneOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z')));
+    }
+
+    Rule Url() {
+        return OneOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), ':', '/', '.'));
     }
 }
