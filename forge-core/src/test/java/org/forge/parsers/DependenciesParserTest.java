@@ -42,7 +42,6 @@ public class DependenciesParserTest {
                                                 .version("3.0.5.RELEASE")
                                 ).toString();
 
-//        String input = "org.springframework:spring-core:3.0.5.RELEASE";
         ParsingResult<?> result = new RecoveringParseRunner(parser.Dependencies()).run(input);
 
         LOGGER.info("{} = {}", input, result.parseTreeRoot.getValue());
@@ -68,7 +67,7 @@ public class DependenciesParserTest {
                                             .withArtifactId("spring-core")
                                             .withArtifactId("spring-web")
                 ).toString();
-//        String input = "org.springframework::3.0.5.RELEASE {\nspring-core,\nspring-web\n}";
+
         ParsingResult<?> result = new RecoveringParseRunner(parser.Dependencies()).run(input);
 
         LOGGER.info("{} = {}", input, result.parseTreeRoot.getValue());
