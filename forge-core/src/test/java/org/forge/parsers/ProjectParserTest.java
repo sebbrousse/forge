@@ -38,13 +38,13 @@ public class ProjectParserTest {
 
     @Test(expected = NoDefinitionException.class)
     public void read_project_should_have_at_least_project_definition() {
-        ParsingResult<?> result = new RecoveringParseRunner(parser.Repository()).run("");
+        ParsingResult<?> result = new RecoveringParseRunner(parser.Project()).run("");
     }
 
     @Ignore
     @Test
     public void read_valid_project_should_return_expected_project() {
-        ParsingResult<?> result = new RecoveringParseRunner(parser.Repository()).run("");
+        ParsingResult<?> result = new RecoveringParseRunner(parser.Project()).run("");
 
         Project expectedProject = new Project();
 
