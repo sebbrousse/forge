@@ -39,6 +39,5 @@ public class RepositoriesParserTest {
 
         assertTrue(result.matched);
 
-
     }
 }

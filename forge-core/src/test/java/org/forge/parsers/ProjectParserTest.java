@@ -30,25 +30,6 @@ public class ProjectParserTest {
         parser = Parboiled.createParser(ProjectParser.class);
     }
 
-    @Test
-    public void test() {
-
-
-        String input = "custom:http://nexus.com/repo/public";
-        ParsingResult<?> result = new RecoveringParseRunner(parser.Repository()).run(input);
-
-        LOGGER.info("{} = {}", input, result.parseTreeRoot.getValue());
-        LOGGER.info("{}", ParseTreeUtils.printNodeTree(result));
-
-        if (!result.matched) {
-            LOGGER.error("{}", StringUtils.join(result.parseErrors, "---\n"));
-        }
-
-        assertTrue(result.matched);
-
-    }
-
-
     @Ignore
     @Test(expected = MandatoryParameterException.class)
     public void read_empty_project_should_return_MandatoryParameterException() {
