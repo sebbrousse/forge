@@ -42,7 +42,11 @@ public class ProjectBuilder {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(definition).append("\n").append(description).append("\n").append(dependencyBuilder);
+        sb.append(definition).append("\n").append(description).append("\n");
+        for (DependencyBuilder dependency : dependencyBuilder) {
+            sb.append(this.dependencyBuilder.toString());
+        }
+
         return sb.toString();
     }
 }

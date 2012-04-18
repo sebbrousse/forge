@@ -28,4 +28,12 @@ public class DependencyBuilder {
         return this;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(groupId).append(":").append(artifactId).append(":").append(version);
+        return sb.toString();
+    }
+
+
 }

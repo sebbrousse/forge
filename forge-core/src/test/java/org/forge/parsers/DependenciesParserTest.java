@@ -25,11 +25,11 @@ public class DependenciesParserTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DependenciesParserTest.class);
 
-    private ProjectParser parser;
+    private DependenciesParser parser;
 
     @Before
     public void init() {
-        parser = Parboiled.createParser(ProjectParser.class);
+        parser = Parboiled.createParser(DependenciesParser.class);
     }
 
     @Test
@@ -41,11 +41,19 @@ public class DependenciesParserTest {
                                                 .artifactId("spring-core")
                                                 .version("3.0.5.RELEASE")
                                 ).toString();
+        input =  "dependencies {"+ aDependency().groupId("org.springframework")
+                .artifactId("spring-core")
+                .version("3.0.5.RELEASE").toString()+"}";
+
+        LOGGER.info("input = {}", input);
 
         ParsingResult<?> result = new RecoveringParseRunner(parser.Dependencies()).run(input);
 
-        LOGGER.info("{} = {}", input, result.parseTreeRoot.getValue());
-        LOGGER.info("{}", ParseTreeUtils.printNodeTree(result));
+        LOGGER.info("result = {}", result.resultValue);
+        LOGGER.info("result = {}", result.valueStack);
+
+        LOGGER.info("result = {}", result.parseTreeRoot.getValue());
+        LOGGER.info("nodeTree = {}", ParseTreeUtils.printNodeTree(result));
 
         if (!result.matched) {
             LOGGER.error("{}", StringUtils.join(result.parseErrors, "---\n"));
