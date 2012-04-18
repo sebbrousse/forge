@@ -4,6 +4,8 @@ import org.forge.exceptions.MandatoryParameterException;
 import org.forge.modele.Project;
 import org.forge.modele.ProjectDefinition;
 import org.parboiled.BaseParser;
+import org.parboiled.Context;
+import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 
@@ -12,13 +14,24 @@ import java.util.StringTokenizer;
 @BuildParseTree
 public class ProjectParser extends BaseParser<Object> {
 
+    private DependenciesParser dependenciesParser = Parboiled.createParser(DependenciesParser.class);
+    private RepositoriesParser repositoriesParser = Parboiled.createParser(RepositoriesParser.class);
+
+
+    @Override
+    public void setContext(Context<Object> context) {
+        dependenciesParser.setContext(context);
+        repositoriesParser.setContext(context);
+        super.setContext(context);
+    }
+
     Rule Project() {
         return Sequence(
                 ProjectDefinition(),
                 ZeroOrMore(
                         FirstOf(
-                                Dependencies(),
-                                Repositories()
+                                dependenciesParser.Dependencies(),
+                                repositoriesParser.Repositories()
                         )
                 )
         );
@@ -28,79 +41,4 @@ public class ProjectParser extends BaseParser<Object> {
         return null;
     }
 
-    Rule Repositories() {
-        return Sequence(
-                "repositories",'{',
-                OneOrMore(Repository()),
-                '}'
-        );
-    }
-
-    Rule Dependencies() {
-        return Sequence(
-                "dependencies",'{',
-                OneOrMore(
-                        FirstOf(Dependency(),
-                                GroupDependencies()
-                        )
-                ),
-                '}'
-        );
-    }
-
-    Rule Dependency() {
-        return Sequence(
-                GroupId(),
-                ':',
-                ArtifactId(),
-                ':',
-                Version(),
-                ZeroOrMore(',')
-        );
-    }
-
-    Rule GroupDependencies() {
-        return Sequence(
-                GroupId(),
-                ':',
-                ':',
-                Version(),
-                '{',
-                OneOrMore(ArtifactDependency()),
-                '}'
-        );
-    }
-
-    Rule ArtifactDependency() {
-        return Sequence(
-                ArtifactId(),
-                ','
-        );
-    }
-
-    Rule GroupId() {
-        return OneOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), '.', '-'));
-    }
-
-    Rule ArtifactId() {
-        return OneOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), '.', '-'));
-    }
-
-    Rule Version() {
-        return OneOrMore(FirstOf(CharRange('0', '9'), CharRange('a', 'z'), CharRange('A', 'Z'), '.'));
-    }
-
-    Rule Repository() {
-        return Sequence(
-                Id(),':',Url()
-        );
-    }
-
-    Rule Id() {
-        return OneOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z')));
-    }
-
-    Rule Url() {
-        return OneOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), ':', '/', '.'));
-    }
 }

@@ -13,20 +13,26 @@ import org.parboiled.annotations.BuildParseTree;
 @BuildParseTree
 public class RepositoriesParser extends BaseParser<Object> {
 
-        Rule Repository() {
-            return Sequence(
-                    Id(),
-                    ':',
-                    Url()
-            );
-        }
+    Rule Repositories() {
+        return Sequence(
+                "repositories",'{',
+                OneOrMore(Repository()),
+                '}'
+        );
+    }
 
-        Rule Id() {
-            return  OneOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z')));
-        }
+    Rule Repository() {
+        return Sequence(
+                Id(),':',Url()
+        );
+    }
 
-        Rule Url() {
-            return   OneOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), ':', '/', '.'));
-        }
+    Rule Id() {
+        return OneOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z')));
+    }
+
+    Rule Url() {
+        return OneOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), ':', '/', '.'));
+    }
 
 }

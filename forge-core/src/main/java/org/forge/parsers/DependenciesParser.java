@@ -14,7 +14,15 @@ import org.parboiled.annotations.BuildParseTree;
 public class DependenciesParser extends BaseParser<Object> {
 
     Rule Dependencies() {
-        return OneOrMore(FirstOf(Dependency(), GroupDependencies()));
+        return Sequence(
+                "dependencies",'{',
+                OneOrMore(
+                        FirstOf(Dependency(),
+                                GroupDependencies()
+                        )
+                ),
+                '}'
+        );
     }
 
     Rule Dependency() {
@@ -48,15 +56,15 @@ public class DependenciesParser extends BaseParser<Object> {
     }
 
     Rule GroupId() {
-        return  OneOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), '.', '-'));
+        return OneOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), '.', '-'));
     }
 
     Rule ArtifactId() {
-        return  OneOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), '.', '-'));
+        return OneOrMore(FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), '.', '-'));
     }
 
     Rule Version() {
-        return  OneOrMore(FirstOf(CharRange('0', '9'), CharRange('a', 'z'), CharRange('A', 'Z'), '.'));
+        return OneOrMore(FirstOf(CharRange('0', '9'), CharRange('a', 'z'), CharRange('A', 'Z'), '.'));
     }
 
 }
